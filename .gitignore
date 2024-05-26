@@ -29,3 +29,5 @@ __pycache__/
 .conda
 
 *.csv
+
+Gemini_api_key.txt
