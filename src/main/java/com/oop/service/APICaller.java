@@ -20,7 +20,7 @@ import com.oop.model.Item;
 public class APICaller {
     // Lấy gợi ý
     public static List<String> querySuggest(String input)
-            throws URISyntaxException, IOException, ParseException, NetWorkException {
+            throws URISyntaxException, IOException, ParseException {
         List<String> res = new ArrayList<>(); // Khai báo đối tượng kiểu tổng quát
         StringBuffer content = connectAndGetRawData("GET", "http://localhost:8000/suggestion?data=", input);
         JSONParser parser = new JSONParser();
@@ -206,7 +206,7 @@ public class APICaller {
             System.err.println("Không thể tìm thấy host: " + host);
             throw new NetWorkException("Không thể kết nối tới mạng");
         } catch (java.io.IOException e) {
-            System.err.println("Lỗi khi kiểm tra kết nối tới " + host + ": " + e.getMessage());
+            System.err.println("Lỗi khi kiểm tra kết nối tới mạng");
             throw new NetWorkException("Lỗi khi kiểm tra kết nối tới mạng");
         }
     }

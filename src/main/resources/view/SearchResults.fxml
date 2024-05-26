@@ -51,7 +51,7 @@
             </ImageView>
          </graphic>
       </Button>
-      <VBox fx:id="searchResults" layoutX="6.0" layoutY="75.0" prefHeight="478.0" prefWidth="800.0" />
+      <VBox fx:id="searchResults" layoutY="75.0" prefHeight="478.0" prefWidth="800.0" />
       <Text fx:id="currentPage" layoutX="667.0" layoutY="576.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="currentPage" wrappingWidth="40.0">
          <font>
             <Font size="14.0" />

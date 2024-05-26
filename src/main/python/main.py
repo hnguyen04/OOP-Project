@@ -53,6 +53,13 @@ def predict():
     for ent in doc.ents:
         ans[ent.label_].append((ent.start_char, ent.end_char, ent.text))
     return jsonify({'entities': ans})
+#Trends detection
+from TrendDetect.API_trendDetect import TrendDetector 
+detector = TrendDetector() 
+@app.route('/detect', methods=['POST'])
+def detect():
+    return detector.detect()
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
