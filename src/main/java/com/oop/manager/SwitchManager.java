@@ -1,5 +1,8 @@
-package com.oop.controller;
+package com.oop.manager;
 
+import com.oop.controller.BaseController;
+import com.oop.controller.DetailController;
+import com.oop.controller.SearchController;
 import com.oop.model.Item;
 import com.opencsv.exceptions.CsvValidationException;
 import javafx.event.ActionEvent;
@@ -16,15 +19,15 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Objects;
 
-
-public class SwitchController {
+public class SwitchManager {
     private static Stage stage;
 
     private static Scene scene;
 
     private static Parent root;
 
-    public static void goDetailPage(BaseController baseController,Event event, Item item, int pageNumber,String searchField)
+    public static void goDetailPage(BaseController baseController, Event event, Item item, int pageNumber,
+            String searchField)
             throws IOException, CsvValidationException, java.text.ParseException, URISyntaxException, ParseException {
         FXMLLoader loader = new FXMLLoader(baseController.getClass().getResource("/view/Detail.fxml"));
         root = loader.load();
@@ -38,14 +41,25 @@ public class SwitchController {
         stage.setScene(scene);
         stage.show();
     }
-    public static void goHomePage(BaseController baseController ,Event event) throws IOException {
-        root = FXMLLoader.load(Objects.requireNonNull(baseController.getClass().getResource("/view/Main.fxml"))); //Đảm bảo đối tượng truyền vào không phải là null
+
+    public static void goHomePage(BaseController baseController, Event event) throws IOException {
+        root = FXMLLoader.load(Objects.requireNonNull(baseController.getClass().getResource("/view/Main.fxml"))); // Đảm
+                                                                                                                  // bảo
+                                                                                                                  // đối
+                                                                                                                  // tượng
+                                                                                                                  // truyền
+                                                                                                                  // vào
+                                                                                                                  // không
+                                                                                                                  // phải
+                                                                                                                  // là
+                                                                                                                  // null
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
     }
-    public static void goSearchPage(BaseController baseController,Event event) throws IOException {
+
+    public static void goSearchPage(BaseController baseController, Event event) throws IOException {
         String searchText = baseController.getSearchField().getText().trim();
         if (!searchText.isEmpty()) {
             FXMLLoader loader = new FXMLLoader(baseController.getClass().getResource("/view/SearchResults.fxml"));
@@ -65,7 +79,9 @@ public class SwitchController {
             alert.showAndWait();
         }
     }
-    public static void returnSearchPage(BaseController baseController,ActionEvent event,int pageNumber, String searchText) throws IOException {
+
+    public static void returnSearchPage(BaseController baseController, ActionEvent event, int pageNumber,
+            String searchText) throws IOException {
         FXMLLoader loader = new FXMLLoader(baseController.getClass().getResource("/view/SearchResults.fxml"));
         Parent root = loader.load(); // Load content from SearchResults.fxml
         SearchController searchController = loader.getController();

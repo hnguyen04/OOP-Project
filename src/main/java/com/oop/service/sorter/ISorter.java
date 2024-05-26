@@ -1,4 +1,4 @@
-package com.oop.sorter;
+package com.oop.service.sorter;
 
 import java.util.List;
 
