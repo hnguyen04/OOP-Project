@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import java.util.ResourceBundle;
 
 import com.oop.service.APICaller;
@@ -26,8 +27,11 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.scene.web.WebView;
@@ -175,7 +179,7 @@ public class SearchController extends BaseController implements Initializable {
             try {
                 SwitchManager.goDetailPage(this, event, item, this.pageNumber, this.searchField.getText());
             } catch (IOException | CsvValidationException | java.text.ParseException | URISyntaxException
-                    | ParseException e) {
+                     | ParseException e) {
                 e.printStackTrace();
             }
         });
@@ -183,20 +187,32 @@ public class SearchController extends BaseController implements Initializable {
         trendButton.setStyle(
                 "-fx-background-color: rgb(15, 76, 117); -fx-text-fill: rgb(187, 225, 250); -fx-font-weight: bold;");
         //
-        trendButton.setOnAction(event -> {
-            try {
-                SwitchManager.goTrendPage(this, event, item, this.pageNumber, this.searchField.getText());
-            } catch (IOException | CsvValidationException | java.text.ParseException | URISyntaxException
-                     | ParseException e) {
-                e.printStackTrace();
-            }
+        trendButton.setOnAction(actionEvent -> {
+            // Tạo một cửa sổ thông báo với hai nút chọn: "Wait" và "Cancel"
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation");
+            alert.setHeaderText("Do you want to wait while we process the information?");
+            alert.setContentText("This may take a few moments.");
+
+
+                try {
+                    SwitchManager.goTrendPage(this, actionEvent, item, this.pageNumber, this.searchField.getText());
+                } catch (IOException | CsvValidationException | java.text.ParseException | URISyntaxException | ParseException e) {
+                    e.printStackTrace();
+                }
         });
-        VBox itemNode = new VBox(title, hyperlink, date, content, detailButton,trendButton);
+
+
+
+        HBox hbox = new HBox(detailButton, trendButton);
+        hbox.setSpacing(5);
+        VBox itemNode = new VBox(title, hyperlink, date, content, hbox);
         itemNode.getStyleClass().add("itemNode");
         itemNode.setSpacing(5);
         itemNode.setPadding(new Insets(5));
         return itemNode;
     }
+
 
     private TextFlow createTextFlow(String content) {
         TextFlow textFlow = new TextFlow();
@@ -213,7 +229,7 @@ public class SearchController extends BaseController implements Initializable {
     }
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        searchField.setOnKeyReleased(event -> handleKeyReleased(event));
+        searchField.setOnKeyReleased(this::handleKeyReleased);
         try {
             getData();
             setupUIComponents();
@@ -252,7 +268,7 @@ public class SearchController extends BaseController implements Initializable {
         }
         lastSearchQuery = searchQuery;
         System.out.println("Searching for: " + searchQuery);
-        List<String> suggestionsResults = new ArrayList<>();
+        List<String> suggestionsResults;
         try {
             suggestionsResults = APICaller.querySuggest(searchQuery);
         } catch (URISyntaxException | IOException | ParseException e) {

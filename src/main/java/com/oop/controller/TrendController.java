@@ -10,6 +10,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import com.oop.manager.SwitchManager;
+import javafx.scene.text.TextFlow;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.ParseException;
@@ -60,19 +62,29 @@ public class TrendController extends BaseController {
         for (String trend : trends.keySet()) {
             Vector<String> details = trends.get(trend);
             if (details != null && !details.isEmpty()) {
-                Text trendTitle = new Text("Trend: " + trend);
-                trendTitle.getStyleClass().add("trend-title");
-                contentBox.getChildren().add(trendTitle);
+                // Create a VBox for each trend to ensure spacing between elements
+                VBox trendContent = new VBox();
+                trendContent.setSpacing(5); // Khoảng cách giữa các phần tử trong một xu hướng
 
-                Text reasonText = new Text("Reason: " + details.get(0));
-                reasonText.getStyleClass().add("reason-text");
-                contentBox.getChildren().add(reasonText);
+                Text trendTitleText = new Text("Trend: " + trend);
+                trendTitleText.getStyleClass().add("trend-title");
+                TextFlow trendTitle = new TextFlow(trendTitleText);
+                trendContent.getChildren().add(trendTitle);
+
+                Text reasonTextContent = new Text("Reason: " + details.get(0));
+                reasonTextContent.getStyleClass().add("reason-text");
+                TextFlow reasonText = new TextFlow(reasonTextContent);
+                trendContent.getChildren().add(reasonText);
 
                 for (int i = 1; i < details.size(); i++) {
-                    Text citationText = new Text("Citation " + i + ": " + details.get(i));
-                    citationText.getStyleClass().add("citation-text");
-                    contentBox.getChildren().add(citationText);
+                    Text citationTextContent = new Text("Citation " + i + ": " + details.get(i));
+                    citationTextContent.getStyleClass().add("citation-text");
+                    TextFlow citationText = new TextFlow(citationTextContent);
+                    trendContent.getChildren().add(citationText);
                 }
+
+                // Add the trend content to the contentBox
+                contentBox.getChildren().add(trendContent);
             }
         }
 
@@ -88,6 +100,9 @@ public class TrendController extends BaseController {
         // Thêm ScrollPane vào VBox chính
         trendList.getChildren().add(scrollPane);
     }
+
+
+
 
     public void initialize() throws CsvValidationException, IOException, ParseException, URISyntaxException,
             org.json.simple.parser.ParseException {
