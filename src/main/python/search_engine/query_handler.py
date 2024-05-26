@@ -31,7 +31,7 @@ os.chdir(find_search_engine_path())
 preprocessor = Preprocessor() #preprocessor
 #đọc file csv
 relative_path = "../../resources/data/all_data.csv"
-preprocessed_path = "../../resources/data/preprocessed_data.csv"
+preprocessed_path = "../../resources/data/preprocessed.csv"
 df = pd.read_csv(relative_path)
 preprocessed_df = pd.read_csv(preprocessed_path)
 #đọc tfidf
@@ -42,7 +42,7 @@ title_tfidf_matrix = pickle.load(open("models/tfidf/title_tfidf_matrix.sav", 'rb
 title_vectorizer = pickle.load(open("models/tfidf/title_vectorizer.sav", 'rb'))
 #đọc txtai
 embeddings = Embeddings()
-embeddings.load('models/txtai_embeddings.model')
+embeddings.load('models/embeddings')
 # về thư mục gốc
 os.chdir(original_dir)
 
@@ -105,7 +105,7 @@ class QueryHandler:
 
         
         elif model_name == 'TxtAI':
-            similarities = embeddings.search(preprocessed_query, limit=500)
+            similarities = embeddings.search(preprocessed_query, limit=2000)
 
         results = []
         for idx, sim in similarities:
@@ -180,7 +180,7 @@ class QueryHandler:
             all_preprocessed_queries.append(preprocessed_word)
         
         all_results.sort(key=lambda x: x['similarity score'], reverse=True)
-        all_results = all_results[:500]
+        all_results = all_results[:2000]
         suggested_query = ' '.join(all_preprocessed_queries)
 
 

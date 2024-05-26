@@ -19,7 +19,7 @@ os.chdir(find_search_engine_path())
 
 #đọc file csv
 relative_path = "../../resources/data/all_data.csv"
-preprocessed_path = "../../resources/data/preprocessed_data.csv"
+preprocessed_path = "../../resources/data/preprocessed.csv"
 df = pd.read_csv(relative_path)
 preprocessed_df = pd.read_csv(preprocessed_path)
 
