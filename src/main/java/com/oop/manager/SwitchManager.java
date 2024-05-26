@@ -3,6 +3,7 @@ package com.oop.manager;
 import com.oop.controller.BaseController;
 import com.oop.controller.DetailController;
 import com.oop.controller.SearchController;
+import com.oop.controller.TrendController;
 import com.oop.model.Item;
 import com.opencsv.exceptions.CsvValidationException;
 import javafx.event.ActionEvent;
@@ -43,16 +44,7 @@ public class SwitchManager {
     }
 
     public static void goHomePage(BaseController baseController, Event event) throws IOException {
-        root = FXMLLoader.load(Objects.requireNonNull(baseController.getClass().getResource("/view/Main.fxml"))); // Đảm
-                                                                                                                  // bảo
-                                                                                                                  // đối
-                                                                                                                  // tượng
-                                                                                                                  // truyền
-                                                                                                                  // vào
-                                                                                                                  // không
-                                                                                                                  // phải
-                                                                                                                  // là
-                                                                                                                  // null
+        root = FXMLLoader.load(Objects.requireNonNull(baseController.getClass().getResource("/view/Main.fxml")));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
         stage.setScene(scene);
@@ -90,6 +82,21 @@ public class SwitchManager {
         searchController.initialize(null, null);
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
+    public static void goTrendPage(BaseController baseController, Event event, Item item, int pageNumber,
+                                    String searchField)
+            throws IOException, CsvValidationException, java.text.ParseException, URISyntaxException, ParseException {
+        FXMLLoader loader = new FXMLLoader(baseController.getClass().getResource("/view/Trend.fxml"));
+        root = loader.load();
+        TrendController trendController = loader.getController();
+        trendController.setItem(item);
+        trendController.initialize();
+        trendController.setPageNumberReturn(pageNumber);
+        trendController.setSearchQueryReturn(searchField);
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
     }
