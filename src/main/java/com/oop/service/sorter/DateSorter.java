@@ -1,7 +1,7 @@
-package com.oop.sorter;
+package com.oop.service.sorter;
 
 import com.oop.model.Item;
-import com.oop.sorter.ISorter;
+import com.oop.service.sorter.ISorter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,8 +28,10 @@ public class DateSorter implements ISorter<Item> {
         sortedList.sort((item1, item2) -> {
             try {
                 // Kiểm tra nếu là ngày "None" thì trả về một ngày mặc định
-                if (item1.getCreationDate().equals("None")) return -1;
-                if (item2.getCreationDate().equals("None")) return 1;
+                if (item1.getCreationDate().equals("None"))
+                    return -1;
+                if (item2.getCreationDate().equals("None"))
+                    return 1;
                 return sdf.parse(item1.getCreationDate()).compareTo(sdf.parse(item2.getCreationDate()));
             } catch (ParseException e) {
                 throw new IllegalArgumentException("Invalid date format", e);
