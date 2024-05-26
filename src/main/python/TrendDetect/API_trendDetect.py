@@ -51,8 +51,11 @@ def detect():
     formatted_ans = ans[7:-3] # remove " '''json " at the beginning and " ''' " at the end
     res = json.loads(formatted_ans)
     return jsonify({'trends' : res})
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> b52946c8155e43aca7110ad6276ccf7c7f81b90f
 if __name__ == '__main__':
     app.run(debug=True, port= 7000)
     print("Server end")
