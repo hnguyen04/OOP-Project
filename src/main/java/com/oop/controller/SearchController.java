@@ -142,21 +142,12 @@ public class SearchController extends BaseController {
     private VBox createItemNode(Item item) {
         Hyperlink hyperlink = new Hyperlink(item.getArticleLink());
         hyperlink.setOnAction(event -> openWebView(item.getArticleLink()));
-<<<<<<< HEAD
-        //
-
-        Text title = new Text(item.getArticleTitle());
-        title.getStyleClass().add("title");
-        //
-        Text date = new Text(item.getCreationDate());
-=======
 
         Text title = new Text(item.getArticleTitle());
         title.getStyleClass().add("title");
 
         Text date = new Text(item.getCreationDate());
-
->>>>>>> d9be081c6ffe98f5cc53078a12e7351fb75334f2
+        
         String contentString = item.getContent().substring(0, Math.min(item.getContent().length(), 250)) + " ...";
         Text contentText = new Text(contentString);
         TextFlow content = new TextFlow(contentText);
@@ -169,12 +160,7 @@ public class SearchController extends BaseController {
         detailButton.setOnAction(event -> {
             try {
                 SwitchManager.goDetailPage(this, event, item, this.pageNumber, this.searchField.getText());
-<<<<<<< HEAD
-            } catch (IOException | CsvValidationException | java.text.ParseException | URISyntaxException
-                    | ParseException e) {
-=======
             } catch (IOException | CsvValidationException | java.text.ParseException | URISyntaxException | ParseException e) {
->>>>>>> d9be081c6ffe98f5cc53078a12e7351fb75334f2
                 e.printStackTrace();
             }
         });
@@ -191,12 +177,7 @@ public class SearchController extends BaseController {
 
             try {
                 SwitchManager.goTrendPage(this, actionEvent, item, this.pageNumber, this.searchField.getText());
-<<<<<<< HEAD
-            } catch (IOException | CsvValidationException | java.text.ParseException | URISyntaxException
-                    | ParseException e) {
-=======
             } catch (IOException | CsvValidationException | java.text.ParseException | URISyntaxException | ParseException e) {
->>>>>>> d9be081c6ffe98f5cc53078a12e7351fb75334f2
                 e.printStackTrace();
             }
         });
