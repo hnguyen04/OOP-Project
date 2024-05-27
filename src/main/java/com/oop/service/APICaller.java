@@ -15,12 +15,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.oop.exception.NetworkException;
+import com.oop.exception.ServerNoResponseException;
 import com.oop.model.Item;
 
 public class APICaller {
     // Lấy gợi ý
     public static List<String> querySuggest(String input)
-            throws URISyntaxException, IOException, ParseException {
+            throws URISyntaxException, IOException, ParseException, ServerNoResponseException {
         List<String> res = new ArrayList<>(); // Khai báo đối tượng kiểu tổng quát
         StringBuffer content = connectAndGetRawData("GET", "http://localhost:8000/suggestion?data=", input);
         JSONParser parser = new JSONParser();
@@ -33,10 +35,11 @@ public class APICaller {
     }
 
     // Lấy tìm kiếm
-    public static List<Item> getSearchResult(String input) throws ParseException, IOException, URISyntaxException {
+    public static List<Item> getSearchResult(String input) throws ParseException, IOException, URISyntaxException, ServerNoResponseException {
         try {
             checkConnectNetWork();
-        } catch (NetWorkException e) {
+            checkServerResponse();
+        } catch (NetworkException | ServerNoResponseException e) {
             throw new RuntimeException(e);
         }
         List<Item> results = new ArrayList<>();
@@ -65,7 +68,7 @@ public class APICaller {
 
     // Get entities from paragraph
     public static HashMap<String, Set<String>> getEntities(String input)
-            throws IOException, URISyntaxException, ParseException {
+            throws IOException, URISyntaxException, ParseException, ServerNoResponseException {
         HashMap<String, Set<String>> result = new HashMap<>();
         StringBuffer jsonContent = connectAndGetRawData("POST", "http://localhost:8000/predict", input);
         String s = jsonContent.toString();
@@ -93,7 +96,7 @@ public class APICaller {
     // Trend detect
     // Phần tử đầu vector là reason, còn lại là citations
     public static HashMap<String, Vector<String>> trendDectect(String input)
-            throws IOException, URISyntaxException, ParseException {
+            throws IOException, URISyntaxException, ParseException, ServerNoResponseException {
         HashMap<String, Vector<String>> result = new HashMap<>();
         StringBuffer content = connectAndGetRawData("POST", "http://localhost:8000/detect", input);
         String s = content.toString();
@@ -116,7 +119,7 @@ public class APICaller {
 
     // Get statistic
     public static HashMap<String, Vector<String>> getStats()
-            throws IOException, URISyntaxException, ParseException {
+            throws IOException, URISyntaxException, ParseException, ServerNoResponseException {
         HashMap<String, Vector<String>> result = new HashMap<>();
         String content = connectAndGetRawData("GET", "http://localhost:8000/stats", "").toString();
         JSONObject jo = (JSONObject) new JSONParser().parse(content);
@@ -149,13 +152,14 @@ public class APICaller {
             throws IOException, URISyntaxException {
         try {
             checkConnectNetWork();
-        } catch (NetWorkException e) {
+            checkServerResponse();
+        } catch (NetworkException | ServerNoResponseException e) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Warning");
             alert.setHeaderText(null);
             alert.setContentText("Please check your connection and try again!");
             alert.showAndWait();
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
         StringBuffer content = new StringBuffer();
         String parsedInput = "";
@@ -181,8 +185,8 @@ public class APICaller {
                 os.write(in, 0, in.length);
             }
         } else if (methodType.equals("GET")) {
-            con.setConnectTimeout(5000);
-            con.setReadTimeout(5000);
+            con.setConnectTimeout(10000);
+            con.setReadTimeout(10000);
         }
         if (con.getResponseCode() == 200) {
             BufferedReader in = new BufferedReader(
@@ -197,17 +201,38 @@ public class APICaller {
     }
 
     // Kiem tra ket noi internet
-    public static void checkConnectNetWork() throws NetWorkException {
+    public static void checkConnectNetWork() throws NetworkException {
         String host = "google.com";
         try {
             InetAddress inetAddress = InetAddress.getByName(host);
-            inetAddress.isReachable(5000);
-        } catch (java.net.UnknownHostException e) {
+            if (!inetAddress.isReachable(5000)) {
+                throw new NetworkException("Không thể kết nối tới mạng");
+            }
+        } catch (UnknownHostException e) {
             System.err.println("Không thể tìm thấy host: " + host);
-            throw new NetWorkException("Không thể kết nối tới mạng");
-        } catch (java.io.IOException e) {
+            throw new NetworkException("Không thể kết nối tới mạng");
+        } catch (IOException e) {
             System.err.println("Lỗi khi kiểm tra kết nối tới mạng");
-            throw new NetWorkException("Lỗi khi kiểm tra kết nối tới mạng");
+            throw new NetworkException("Lỗi khi kiểm tra kết nối tới mạng");
+        }
+    }
+
+    // Kiểm tra server có phản hồi không
+    public static void checkServerResponse() throws ServerNoResponseException {
+        String serverUrl = "http://localhost:8000";
+        try {
+            URL url = new URL(serverUrl);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.setConnectTimeout(5000); // 5 seconds
+            con.setReadTimeout(5000);    // 5 seconds
+
+            int status = con.getResponseCode();
+            if (status != 200) {
+                throw new ServerNoResponseException("Server không phản hồi");
+            }
+        } catch (IOException e) {
+            throw new ServerNoResponseException("Server không phản hồi");
         }
     }
 }

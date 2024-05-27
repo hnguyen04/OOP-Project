@@ -2,21 +2,18 @@ package com.oop.controller;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-
-import java.util.ResourceBundle;
-
+import com.oop.exception.InvalidSearchQueryException;
+import com.oop.exception.ServerNoResponseException;
 import com.oop.service.APICaller;
-import com.oop.service.NetWorkException;
+import com.oop.exception.NetworkException;
 import com.oop.service.sorter.AuthorSorter;
 import com.oop.service.sorter.DateSorter;
 import com.oop.service.sorter.TitleSorter;
-import com.oop.manager.SwitchManager;
 import com.oop.model.Item;
 import com.opencsv.exceptions.CsvValidationException;
 
@@ -25,7 +22,6 @@ import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 
 import javafx.scene.Scene;
@@ -44,7 +40,7 @@ import javafx.util.Duration;
 
 import org.json.simple.parser.ParseException;
 
-public class SearchController extends BaseController implements Initializable {
+public class SearchController extends BaseController{
 
     @FXML
     private TextField searchField;
@@ -117,6 +113,12 @@ public class SearchController extends BaseController implements Initializable {
                     SwitchManager.goSearchPage(this, event);
                 } catch (IOException e) {
                     e.printStackTrace();
+                } catch (InvalidSearchQueryException e) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Invalid query");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please re-enter, type some word!");
+                    alert.showAndWait();
                 }
             });
             suggestionField.setOnMouseEntered(
@@ -145,7 +147,6 @@ public class SearchController extends BaseController implements Initializable {
         scrollPane.setPrefHeight(780);
         searchResults.getChildren().add(scrollPane);
     }
-
     private VBox createItemNode(Item item) {
         Hyperlink hyperlink = new Hyperlink(item.getArticleLink());
         hyperlink.setOnAction(event -> openWebView(item.getArticleLink()));
@@ -166,11 +167,11 @@ public class SearchController extends BaseController implements Initializable {
         Text date = new Text(formattedDate);
         date.getStyleClass().add("date");
         //
-        TextFlow content = createTextFlow(
-                item.getContent().substring(0, Math.min(item.getContent().length(), 250)) + " ...");
+        String contentString = item.getContent().substring(0, Math.min(item.getContent().length(), 250)) + " ...";
+        Text contentText = new Text(contentString);
+        TextFlow content = new TextFlow(contentText);
         content.setMinWidth(740);
         content.getStyleClass().add("content");
-        //
         Button detailButton = new Button("Detail");
         detailButton.setStyle(
                 "-fx-background-color: rgb(15, 76, 117); -fx-text-fill: rgb(187, 225, 250); -fx-font-weight: bold;");
@@ -181,14 +182,18 @@ public class SearchController extends BaseController implements Initializable {
             } catch (IOException | CsvValidationException | java.text.ParseException | URISyntaxException
                      | ParseException e) {
                 e.printStackTrace();
+            } catch (ServerNoResponseException e) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Server is not responding");
+                alert.setHeaderText(null);
+                alert.setContentText("Please try connect to server!");
+                alert.showAndWait();
             }
         });
         Button trendButton = new Button("Trend");
         trendButton.setStyle(
                 "-fx-background-color: rgb(15, 76, 117); -fx-text-fill: rgb(187, 225, 250); -fx-font-weight: bold;");
-        //
         trendButton.setOnAction(actionEvent -> {
-            // Tạo một cửa sổ thông báo với hai nút chọn: "Wait" và "Cancel"
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmation");
             alert.setHeaderText("Do you want to wait while we process the information?");
@@ -214,27 +219,26 @@ public class SearchController extends BaseController implements Initializable {
     }
 
 
-    private TextFlow createTextFlow(String content) {
-        TextFlow textFlow = new TextFlow();
-        content = content + ".....";
-        Text text = new Text(content);
-        textFlow.getChildren().add(text);
-        textFlow.setMaxWidth(450);
-        return textFlow;
-    }
 
-    public void getData() throws ParseException, IOException, URISyntaxException {
-        searchResultList = APICaller.getSearchResult(searchField.getText());
+
+    public void getData() throws ParseException, IOException, URISyntaxException, ServerNoResponseException {
+        try {
+            searchResultList = APICaller.getSearchResult(searchField.getText());
+        } catch (ParseException | URISyntaxException | IOException | ServerNoResponseException e) {
+            throw new RuntimeException(e);
+        }
         addSearchResult(searchResultList);
     }
 
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initialize() {
         searchField.setOnKeyReleased(this::handleKeyReleased);
         try {
             getData();
             setupUIComponents();
         } catch (ParseException | IOException | URISyntaxException e) {
             e.printStackTrace();
+        } catch (ServerNoResponseException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -242,7 +246,7 @@ public class SearchController extends BaseController implements Initializable {
         if (event.getCode().equals(KeyCode.ENTER)) {
             try {
                 SwitchManager.goSearchPage(this, event);
-            } catch (IOException e) {
+            } catch (IOException | InvalidSearchQueryException e) {
                 e.printStackTrace();
             }
         } else {
@@ -250,7 +254,7 @@ public class SearchController extends BaseController implements Initializable {
                 idleTimeline = new Timeline(new KeyFrame(Duration.millis(IDLE_TIMEOUT), evt -> {
                     try {
                         handleIdleEvent();
-                    } catch (NetWorkException e) {
+                    } catch (NetworkException | URISyntaxException | IOException | ParseException e) {
                         e.printStackTrace();
                     }
                 }));
@@ -260,7 +264,7 @@ public class SearchController extends BaseController implements Initializable {
         }
     }
 
-    private void handleIdleEvent() throws NetWorkException {
+    private void handleIdleEvent() throws NetworkException, URISyntaxException, IOException, ParseException {
         String searchQuery = searchField.getText();
         if (searchQuery.equals(lastSearchQuery)) {
             idleTimeline.stop();
@@ -268,12 +272,15 @@ public class SearchController extends BaseController implements Initializable {
         }
         lastSearchQuery = searchQuery;
         System.out.println("Searching for: " + searchQuery);
-        List<String> suggestionsResults;
+        List<String> suggestionsResults = new ArrayList<>();
         try {
             suggestionsResults = APICaller.querySuggest(searchQuery);
-        } catch (URISyntaxException | IOException | ParseException e) {
-            e.printStackTrace();
-            return;
+        } catch (ServerNoResponseException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Server is not responding");
+            alert.setHeaderText(null);
+            alert.setContentText("Please try connect to server!");
+            alert.showAndWait();
         }
         try {
             addSuggestions(suggestionsResults);
@@ -299,6 +306,8 @@ public class SearchController extends BaseController implements Initializable {
                 SwitchManager.goSearchPage(this, event);
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (InvalidSearchQueryException e) {
+                throw new RuntimeException(e);
             }
         });
         nextPageButton.setOnAction(event -> {

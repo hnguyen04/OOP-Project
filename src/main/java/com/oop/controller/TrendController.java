@@ -1,15 +1,17 @@
 package com.oop.controller;
 
+import com.oop.exception.NetworkException;
+import com.oop.exception.ServerNoResponseException;
 import com.oop.service.APICaller;
 import com.oop.model.Item;
 import com.opencsv.exceptions.CsvValidationException;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import com.oop.manager.SwitchManager;
 import javafx.scene.text.TextFlow;
 
 import java.io.IOException;
@@ -23,7 +25,7 @@ public class TrendController extends BaseController {
     @FXML
     private VBox trendList;
     @FXML
-    private Button returnPage;
+    private Button returnButton;
     private int pageBefore;
     private String searchText;
     private HashMap<String, Vector<String>> trends;
@@ -48,6 +50,12 @@ public class TrendController extends BaseController {
             // Hiển thị thông báo lỗi cho người dùng
             Text errorText = new Text("Failed to load trends: " + e.getMessage());
             trendList.getChildren().add(errorText);
+        } catch (ServerNoResponseException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Server is not responding");
+            alert.setHeaderText(null);
+            alert.setContentText("Please try connect to server!");
+            alert.showAndWait();
         }
     }
 
@@ -107,10 +115,12 @@ public class TrendController extends BaseController {
     public void initialize() throws CsvValidationException, IOException, ParseException, URISyntaxException,
             org.json.simple.parser.ParseException {
         getTrendData();
-        returnPage.setOnAction(event -> {
+        returnButton.setOnAction(event -> {
             try {
                 SwitchManager.returnSearchPage(this, event, this.pageBefore, this.searchText);
             } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (NetworkException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -120,8 +130,8 @@ public class TrendController extends BaseController {
         this.item = item;
     }
 
-    public void setPageNumberReturn(int pageNumber) {
-        this.pageBefore = pageNumber;
+    public void setPageNumberReturn(int pageBefore) {
+        this.pageBefore = pageBefore;
     }
 
     public void setSearchQueryReturn(String searchText) {

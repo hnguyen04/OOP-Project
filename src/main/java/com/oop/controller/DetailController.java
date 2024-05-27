@@ -6,12 +6,14 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Set;
 
-import com.oop.manager.SwitchManager;
+import com.oop.exception.NetworkException;
+import com.oop.exception.ServerNoResponseException;
 import com.oop.model.Item;
 import com.oop.service.APICaller;
 import com.opencsv.exceptions.CsvValidationException;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
@@ -21,20 +23,30 @@ public class DetailController extends BaseController {
 
     private Item item;
 
-    HashMap<String, Set<String>> detailContent;
+    private HashMap<String, Set<String>> detailContent;
 
     @FXML
     private TextFlow contentBox;
     @FXML
     private Button returnButton;
     private String searchText;
-    private int seachPageBeforeGo;
+    private int pageBefore;
 
-    public void getDetailData() throws IOException, URISyntaxException, org.json.simple.parser.ParseException {
+    public void getDetailData() throws URISyntaxException, org.json.simple.parser.ParseException {
         if (item == null) {
             return;
         }
-        detailContent = APICaller.getEntities(item.getContent());
+        try {
+            detailContent = APICaller.getEntities(item.getContent());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }  catch (ServerNoResponseException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Server is not responding");
+            alert.setHeaderText(null);
+            alert.setContentText("Please try connect to server!");
+            alert.showAndWait();
+        }
         System.out.println(detailContent);
         createDetailContent();
     }
@@ -64,12 +76,14 @@ public class DetailController extends BaseController {
     }
 
     public void initialize() throws CsvValidationException, IOException, ParseException, URISyntaxException,
-            org.json.simple.parser.ParseException {
-        getDetailData();
+            org.json.simple.parser.ParseException, ServerNoResponseException {
+            getDetailData();
         returnButton.setOnAction(event -> {
             try {
-                SwitchManager.returnSearchPage(this, event, this.seachPageBeforeGo, this.searchText);
+                SwitchManager.returnSearchPage(this, event, this.pageBefore, this.searchText);
             } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (NetworkException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -79,8 +93,8 @@ public class DetailController extends BaseController {
         this.item = item;
     }
 
-    public void setPageNumberReturn(int pageNumber) {
-        this.seachPageBeforeGo = pageNumber;
+    public void setPageNumberReturn(int pageBefore) {
+        this.pageBefore = pageBefore;
     }
 
     public void setSearchQueryReturn(String searchText) {
