@@ -16,7 +16,7 @@ class TrendDetector:
         self.app.route('/detect', methods=['POST'])(self.detect)
 
     def configure_genai(self):
-        api_key = open("./src/main/python/TrendDetect/Gemini_api_key.txt", "r").read()
+        api_key = open("./src/main/python/trend_detect/Gemini_api_key.txt", "r").read()
         genai.configure(api_key=api_key)
         return genai
 

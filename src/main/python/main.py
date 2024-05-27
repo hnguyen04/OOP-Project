@@ -2,10 +2,12 @@ from flask import Flask, request, jsonify
 import time
 import spacy
 import pandas as pd
-from Server_trả_gợi_ý import handle_time
-from Server_trả_gợi_ý import handle
+from suggestion import handle_time
+from suggestion import handle
 from get_data_stats import get_data_stats
 from search_engine.query_handler import QueryHandler
+from trend_detect.API_trendDetect import TrendDetector 
+
 
 
 
@@ -39,22 +41,22 @@ def suggestion():
     handle_time.handle_time(data,ket_qua_tim_kiem,suggestion_limit,time_limit,start_time)
     return jsonify({'result':ket_qua_tim_kiem} )
 
-#NER
-nlp_ner = spacy.load("./src/main/python/NER/model-best")
-@app.route('/predict', methods=['POST'])
-def predict():
-    # Nhận dữ liệu đầu vào từ yêu cầu
-    data = request.data.decode('utf-8')
-    # Xử lý văn bản và dự đoán
-    doc = nlp_ner(data)
-    ans = {}
-    for ent in doc.ents:
-        ans[ent.label_] = []
-    for ent in doc.ents:
-        ans[ent.label_].append((ent.start_char, ent.end_char, ent.text))
-    return jsonify({'entities': ans})
+# #NER
+# nlp_ner = spacy.load("./src/main/python/ner/model-best")
+# @app.route('/predict', methods=['POST'])
+# def predict():
+#     # Nhận dữ liệu đầu vào từ yêu cầu
+#     data = request.data.decode('utf-8')
+#     # Xử lý văn bản và dự đoán
+#     doc = nlp_ner(data)
+#     ans = {}
+#     for ent in doc.ents:
+#         ans[ent.label_] = []
+#     for ent in doc.ents:
+#         ans[ent.label_].append((ent.start_char, ent.end_char, ent.text))
+#     return jsonify({'entities': ans})
+
 #Trends detection
-from TrendDetect.API_trendDetect import TrendDetector 
 detector = TrendDetector() 
 @app.route('/detect', methods=['POST'])
 def detect():
