@@ -45,7 +45,7 @@ public class APICaller {
         }
         List<Item> results = new ArrayList<>();
         StringBuffer jsonContent = connectAndGetRawData("GET",
-                "http://localhost:8000/search?byTitle=1&semanticSearch=0&q=", input);
+                "http://localhost:8000/search?byTitle=0&semanticSearch=0&q=", input);
         String s = jsonContent.toString().replace("NaN", "\"None\"");
         JSONObject jo = (JSONObject) new JSONParser().parse(s);
         JSONArray ja = (JSONArray) jo.get("results");
@@ -247,7 +247,7 @@ public class APICaller {
 
     // Kiểm tra server có phản hồi không
     public static void checkServerResponse() throws ServerNoResponseException {
-        String serverUrl = "http://localhost:8000/search?byTitle=1&semanticSearch=0&q=";
+        String serverUrl = "http://localhost:8000/search?byTitle=0&semanticSearch=0&q=";
         try {
             URL url = new URL(serverUrl);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();

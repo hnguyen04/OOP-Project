@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.oop.exception.InvalidSearchQueryException;
 import com.oop.exception.ServerNoResponseException;
 import com.oop.manager.SwitchManager;
 import com.oop.service.APICaller;

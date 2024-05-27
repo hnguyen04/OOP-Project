@@ -191,6 +191,10 @@ class QueryHandler:
             "results": all_results,
         }
 
+        if by_title == False:
+            if len(response['results']) < 10:
+                return self.query(query_string=query_string, by_title=True, semantic_search=semantic_search)
+
         return json.dumps(response)
 
 # if __name__ == '__main__':
