@@ -1,11 +1,8 @@
 package com.oop;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Objects;
 
-import com.oop.model.Item;
-import com.opencsv.exceptions.CsvValidationException;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -39,8 +36,7 @@ public class Main extends Application {
         }
     }
 
-    public static void main(String[] args) throws CsvValidationException, IOException, ParseException {
-        Item.readItemsFromCSV();
+    public static void main(String[] args) {
         launch(args);
     }
 }

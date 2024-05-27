@@ -8,7 +8,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.oop.controller.TrendController">
    <children>
-      <Button fx:id="returnPage" layoutX="29.0" layoutY="20.0" mnemonicParsing="false">
+      <Button fx:id="returnButton" layoutX="29.0" layoutY="20.0" mnemonicParsing="false">
          <graphic>
             <ImageView fitHeight="19.0" fitWidth="17.0">
                <image>

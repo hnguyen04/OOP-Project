@@ -1,10 +1,6 @@
 package com.oop.model;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
-import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 
 public class Item implements Comparable<Item> {
@@ -38,19 +34,6 @@ public class Item implements Comparable<Item> {
         this.tags = tags;
         this.summary = summary;
     }
-
-    // get data
-    public static List<Item> readItemsFromCSV() {
-        List<Item> items = new ArrayList<>();
-        return items;
-    }
-
-    // Phương thức render ra UI cho một mục
-    public static VBox createItemUI(Item item) {
-        VBox itemUI = new VBox();
-        return itemUI;
-    }
-
     // Getters and setters for all properties
     public String getArticleLink() {
         return articleLink;

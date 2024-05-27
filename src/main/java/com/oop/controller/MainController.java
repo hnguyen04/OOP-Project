@@ -5,13 +5,13 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.oop.manager.SwitchManager;
+import com.oop.exception.InvalidSearchQueryException;
+import com.oop.exception.ServerNoResponseException;
 import com.oop.service.APICaller;
-import com.oop.service.NetWorkException;
+import com.oop.exception.NetworkException;
 
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBase;
 
+import javafx.scene.control.Alert;
 import org.json.simple.parser.ParseException;
 
 import javafx.animation.KeyFrame;
@@ -40,8 +40,6 @@ public class MainController extends BaseController {
 
     @FXML
     private VBox suggestions;
-    @FXML
-    private Button searchContainer;
 
     public void addSuggestions(List<String> suggestionsResult) throws IOException {
         suggestions.getChildren().clear();
@@ -54,31 +52,28 @@ public class MainController extends BaseController {
             suggestionField.setOnMouseClicked(event -> {
                 searchField.setText(suggestionLabel.getText());
                 try {
+                    APICaller.checkConnectNetWork();
+                } catch (NetworkException e) {
+
+                }
+                try{
                     SwitchManager.goSearchPage(this, event);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                } catch (InvalidSearchQueryException e) {
+
                 }
             });
-            suggestionField.setOnMouseEntered(new EventHandler<Event>() {
-                @Override
-                public void handle(Event event) {
-                    suggestionField.setStyle(
-                            "-fx-background-color: #dae7f3;-fx-background-radius: 10px;-fx-padding:5px;-fx-font-size: 15px;-fx-border-color: rgb(15, 76,117);-fx-border-width: 0px 1px 1px 0px;-fx-border-radius: 0px 0px 10px 10px;");
-                }
-            });
-            suggestionField.setOnMouseExited(new EventHandler<Event>() {
-                @Override
-                public void handle(Event event) {
-                    suggestionField.setStyle(
-                            "-fx-padding:5px;-fx-font-size: 15px;-fx-border-color: rgb(15, 76,117);-fx-border-width: 0px 0px 1px 0px;-fx-border-radius: 0px 0px 10px 10px;");
-                }
-            });
+            suggestionField.setOnMouseEntered((EventHandler<Event>) event -> suggestionField.setStyle(
+                    "-fx-background-color: #dae7f3;-fx-background-radius: 10px;-fx-padding:5px;-fx-font-size: 15px;-fx-border-color: rgb(15, 76,117);-fx-border-width: 0px 1px 1px 0px;-fx-border-radius: 0px 0px 10px 10px;"));
+            suggestionField.setOnMouseExited((EventHandler<Event>) event -> suggestionField.setStyle(
+                    "-fx-padding:5px;-fx-font-size: 15px;-fx-border-color: rgb(15, 76,117);-fx-border-width: 0px 0px 1px 0px;-fx-border-radius: 0px 0px 10px 10px;"));
             suggestions.getChildren().add(suggestionField);
         }
         suggestions.setCursor(Cursor.HAND);
     }
 
-    private void handleIdleEvent() throws NetWorkException {
+    public void handleIdleEvent() throws NetworkException {
         String searchQuery = searchField.getText();
         if (searchQuery.equals(lastSearchQuery)) {
             idleTimeline.stop();
@@ -92,6 +87,12 @@ public class MainController extends BaseController {
         } catch (URISyntaxException | IOException | ParseException e) {
             e.printStackTrace();
             return;
+        } catch (ServerNoResponseException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Server is not responding");
+            alert.setHeaderText(null);
+            alert.setContentText("Please try connect to server!");
+            alert.showAndWait();
         }
         try {
             addSuggestions(suggestionsResults);
@@ -101,22 +102,24 @@ public class MainController extends BaseController {
     }
 
     public void initialize() throws IOException, ParseException {
-        searchField.setOnKeyReleased(event -> handleKeyReleased(event));
+        searchField.setOnKeyReleased(this::handleKeyReleased);
     }
 
-    private void handleKeyReleased(KeyEvent event) {
+    public void handleKeyReleased(KeyEvent event) {
         if (event.getCode().equals(KeyCode.ENTER)) {
             try {
                 SwitchManager.goSearchPage(this, event);
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (InvalidSearchQueryException e) {
+                throw new RuntimeException(e);
             }
         } else {
             if (idleTimeline == null) {
                 idleTimeline = new Timeline(new KeyFrame(Duration.millis(IDLE_TIMEOUT), evt -> {
                     try {
                         handleIdleEvent();
-                    } catch (NetWorkException e) {
+                    } catch (NetworkException e) {
                         e.printStackTrace();
                     }
                 }));
