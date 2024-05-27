@@ -1,0 +1,29 @@
+.trend-title {
+  -fx-font-size: 20px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #2a2a2a;
+  -fx-padding: 10px;
+  -fx-background-color: #f4f4f4;
+  -fx-border-color: #dcdcdc;
+  -fx-border-width: 1px;
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
+}
+/* styles.css */
+.reason-text {
+  -fx-font-size: 16px;
+  -fx-text-fill: rgb(187, 225, 250) !important;
+  -fx-padding: 8px;
+}
+/* styles.css */
+.citation-text {
+  -fx-font-size: 14px;
+  -fx-font-style: italic;
+  -fx-text-fill: #808080; /* Gray color */
+  -fx-padding: 5px;
+  -fx-background-color: #f9f9f9; /* Very light gray background */
+  -fx-border-color: #d3d3d3; /* Light gray border */
+  -fx-border-width: 1px;
+  -fx-border-radius: 3px;
+  -fx-background-radius: 3px;
+}

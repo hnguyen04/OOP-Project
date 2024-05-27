@@ -11,7 +11,6 @@ import com.oop.manager.SwitchManager;
 import com.oop.service.APICaller;
 import com.oop.exception.NetworkException;
 
-
 import javafx.scene.control.Alert;
 import org.json.simple.parser.ParseException;
 
@@ -62,7 +61,7 @@ public class MainController extends BaseController {
                     alert.setContentText("Please check your connect and retry!");
                     alert.showAndWait();
                 }
-                try{
+                try {
                     SwitchManager.goSearchPage(this, event);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -84,7 +83,6 @@ public class MainController extends BaseController {
             return;
         }
         lastSearchQuery = searchQuery;
-        System.out.println("Searching for: " + searchQuery);
         List<String> suggestionsResults = new ArrayList<>();
         try {
             suggestionsResults = APICaller.querySuggest(searchQuery);

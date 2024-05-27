@@ -40,14 +40,13 @@ public class DetailController extends BaseController {
             detailContent = APICaller.getEntities(item.getContent());
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }  catch (ServerNoResponseException e) {
+        } catch (ServerNoResponseException e) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Server is not responding");
             alert.setHeaderText(null);
             alert.setContentText("Please try connect to server!");
             alert.showAndWait();
         }
-        System.out.println(detailContent);
         createDetailContent();
     }
 
@@ -77,7 +76,7 @@ public class DetailController extends BaseController {
 
     public void initialize() throws CsvValidationException, IOException, ParseException, URISyntaxException,
             org.json.simple.parser.ParseException, ServerNoResponseException {
-            getDetailData();
+        getDetailData();
         returnButton.setOnAction(event -> {
             try {
                 SwitchManager.returnSearchPage(this, event, this.pageBefore, this.searchText);

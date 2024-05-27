@@ -37,7 +37,7 @@ import javafx.util.Duration;
 
 import org.json.simple.parser.ParseException;
 
-public class SearchController extends BaseController{
+public class SearchController extends BaseController {
 
     @FXML
     private TextField searchField;
@@ -138,13 +138,16 @@ public class SearchController extends BaseController{
         scrollPane.setPrefHeight(780);
         searchResults.getChildren().add(scrollPane);
     }
+
     private VBox createItemNode(Item item) {
         Hyperlink hyperlink = new Hyperlink(item.getArticleLink());
         hyperlink.setOnAction(event -> openWebView(item.getArticleLink()));
         //
+
         Text title = new Text(item.getArticleTitle());
         title.getStyleClass().add("title");
-    Text date = new Text(item.getCreationDate());
+        //
+        Text date = new Text(item.getCreationDate());
         String contentString = item.getContent().substring(0, Math.min(item.getContent().length(), 250)) + " ...";
         Text contentText = new Text(contentString);
         TextFlow content = new TextFlow(contentText);
@@ -158,7 +161,7 @@ public class SearchController extends BaseController{
             try {
                 SwitchManager.goDetailPage(this, event, item, this.pageNumber, this.searchField.getText());
             } catch (IOException | CsvValidationException | java.text.ParseException | URISyntaxException
-                     | ParseException e) {
+                    | ParseException e) {
                 e.printStackTrace();
             }
         });
@@ -171,15 +174,13 @@ public class SearchController extends BaseController{
             alert.setHeaderText("Do you want to wait while we process the information?");
             alert.setContentText("This may take a few moments.");
 
-
-                try {
-                    SwitchManager.goTrendPage(this, actionEvent, item, this.pageNumber, this.searchField.getText());
-                } catch (IOException | CsvValidationException | java.text.ParseException | URISyntaxException | ParseException e) {
-                    e.printStackTrace();
-                }
+            try {
+                SwitchManager.goTrendPage(this, actionEvent, item, this.pageNumber, this.searchField.getText());
+            } catch (IOException | CsvValidationException | java.text.ParseException | URISyntaxException
+                    | ParseException e) {
+                e.printStackTrace();
+            }
         });
-
-
 
         HBox hbox = new HBox(detailButton, trendButton);
         hbox.setSpacing(5);
@@ -189,9 +190,6 @@ public class SearchController extends BaseController{
         itemNode.setPadding(new Insets(5));
         return itemNode;
     }
-
-
-
 
     public void getData() throws ParseException, IOException, URISyntaxException, ServerNoResponseException {
         try {
@@ -243,7 +241,6 @@ public class SearchController extends BaseController{
             return;
         }
         lastSearchQuery = searchQuery;
-        System.out.println("Searching for: " + searchQuery);
         List<String> suggestionsResults = new ArrayList<>();
         try {
             suggestionsResults = APICaller.querySuggest(searchQuery);

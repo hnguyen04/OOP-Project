@@ -31,7 +31,6 @@ public class TrendController extends BaseController {
     private String searchText;
     private HashMap<String, Vector<String>> trends;
 
-
     public void getTrendData() {
         if (item == null) {
             return;
@@ -39,7 +38,6 @@ public class TrendController extends BaseController {
         try {
             trends = APICaller.trendDectect(item.getContent());
             if (!trends.isEmpty()) {
-                System.out.println(trends);
                 createTrendContent();
             } else {
                 // Hiển thị thông báo lỗi cho người dùng nếu không có dữ liệu trả về
@@ -59,7 +57,6 @@ public class TrendController extends BaseController {
             alert.showAndWait();
         }
     }
-
 
     public void createTrendContent() {
         trendList.getChildren().clear();
@@ -109,9 +106,6 @@ public class TrendController extends BaseController {
         // Thêm ScrollPane vào VBox chính
         trendList.getChildren().add(scrollPane);
     }
-
-
-
 
     public void initialize() throws CsvValidationException, IOException, ParseException, URISyntaxException,
             org.json.simple.parser.ParseException {
