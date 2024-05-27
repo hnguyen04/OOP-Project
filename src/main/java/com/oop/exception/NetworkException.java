@@ -5,7 +5,4 @@ public class NetworkException extends Exception {
         super(msg);
     }
 
-    public NetworkException(Throwable cause) {
-        super(cause);
-    }
 }

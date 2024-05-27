@@ -141,27 +141,29 @@ public class SearchController extends BaseController{
     private VBox createItemNode(Item item) {
         Hyperlink hyperlink = new Hyperlink(item.getArticleLink());
         hyperlink.setOnAction(event -> openWebView(item.getArticleLink()));
-        //
+
         Text title = new Text(item.getArticleTitle());
         title.getStyleClass().add("title");
-    Text date = new Text(item.getCreationDate());
+
+        Text date = new Text(item.getCreationDate());
+
         String contentString = item.getContent().substring(0, Math.min(item.getContent().length(), 250)) + " ...";
         Text contentText = new Text(contentString);
         TextFlow content = new TextFlow(contentText);
-        content.setMinWidth(740);
+        content.setMaxWidth(740);  // Đặt maxWidth để buộc xuống dòng sớm hơn
         content.getStyleClass().add("content");
+
         Button detailButton = new Button("Detail");
         detailButton.setStyle(
                 "-fx-background-color: rgb(15, 76, 117); -fx-text-fill: rgb(187, 225, 250); -fx-font-weight: bold;");
-        //
         detailButton.setOnAction(event -> {
             try {
                 SwitchManager.goDetailPage(this, event, item, this.pageNumber, this.searchField.getText());
-            } catch (IOException | CsvValidationException | java.text.ParseException | URISyntaxException
-                     | ParseException e) {
+            } catch (IOException | CsvValidationException | java.text.ParseException | URISyntaxException | ParseException e) {
                 e.printStackTrace();
             }
         });
+
         Button trendButton = new Button("Trend");
         trendButton.setStyle(
                 "-fx-background-color: rgb(15, 76, 117); -fx-text-fill: rgb(187, 225, 250); -fx-font-weight: bold;");
@@ -170,16 +172,14 @@ public class SearchController extends BaseController{
             alert.setTitle("Confirmation");
             alert.setHeaderText("Do you want to wait while we process the information?");
             alert.setContentText("This may take a few moments.");
+            alert.showAndWait();
 
-
-                try {
-                    SwitchManager.goTrendPage(this, actionEvent, item, this.pageNumber, this.searchField.getText());
-                } catch (IOException | CsvValidationException | java.text.ParseException | URISyntaxException | ParseException e) {
-                    e.printStackTrace();
-                }
+            try {
+                SwitchManager.goTrendPage(this, actionEvent, item, this.pageNumber, this.searchField.getText());
+            } catch (IOException | CsvValidationException | java.text.ParseException | URISyntaxException | ParseException e) {
+                e.printStackTrace();
+            }
         });
-
-
 
         HBox hbox = new HBox(detailButton, trendButton);
         hbox.setSpacing(5);
@@ -187,6 +187,7 @@ public class SearchController extends BaseController{
         itemNode.getStyleClass().add("itemNode");
         itemNode.setSpacing(5);
         itemNode.setPadding(new Insets(5));
+
         return itemNode;
     }
 
