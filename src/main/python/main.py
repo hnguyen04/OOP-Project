@@ -41,20 +41,20 @@ def suggestion():
     handle_time.handle_time(data,ket_qua_tim_kiem,suggestion_limit,time_limit,start_time)
     return jsonify({'result':ket_qua_tim_kiem} )
 
-# #NER
-# nlp_ner = spacy.load("./src/main/python/ner/model-best")
-# @app.route('/predict', methods=['POST'])
-# def predict():
-#     # Nhận dữ liệu đầu vào từ yêu cầu
-#     data = request.data.decode('utf-8')
-#     # Xử lý văn bản và dự đoán
-#     doc = nlp_ner(data)
-#     ans = {}
-#     for ent in doc.ents:
-#         ans[ent.label_] = []
-#     for ent in doc.ents:
-#         ans[ent.label_].append((ent.start_char, ent.end_char, ent.text))
-#     return jsonify({'entities': ans})
+#NER
+nlp_ner = spacy.load("./src/main/python/ner/model-best")
+@app.route('/predict', methods=['POST'])
+def predict():
+    # Nhận dữ liệu đầu vào từ yêu cầu
+    data = request.data.decode('utf-8')
+    # Xử lý văn bản và dự đoán
+    doc = nlp_ner(data)
+    ans = {}
+    for ent in doc.ents:
+        ans[ent.label_] = []
+    for ent in doc.ents:
+        ans[ent.label_].append((ent.start_char, ent.end_char, ent.text))
+    return jsonify({'entities': ans})
 
 #Trends detection
 detector = TrendDetector() 
