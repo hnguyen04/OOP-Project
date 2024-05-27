@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Set;
-
+import com.oop.manager.SwitchManager;
 import com.oop.exception.NetworkException;
 import com.oop.exception.ServerNoResponseException;
 import com.oop.model.Item;
@@ -82,8 +82,6 @@ public class DetailController extends BaseController {
             try {
                 SwitchManager.returnSearchPage(this, event, this.pageBefore, this.searchText);
             } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (NetworkException e) {
                 throw new RuntimeException(e);
             }
         });

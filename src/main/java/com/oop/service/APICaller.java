@@ -23,6 +23,7 @@ public class APICaller {
     // Lấy gợi ý
     public static List<String> querySuggest(String input)
             throws URISyntaxException, IOException, ParseException, ServerNoResponseException {
+
         List<String> res = new ArrayList<>(); // Khai báo đối tượng kiểu tổng quát
         StringBuffer content = connectAndGetRawData("GET", "http://localhost:8000/suggestion?data=", input);
         JSONParser parser = new JSONParser();
@@ -97,6 +98,25 @@ public class APICaller {
     // Phần tử đầu vector là reason, còn lại là citations
     public static HashMap<String, Vector<String>> trendDectect(String input)
             throws IOException, URISyntaxException, ParseException, ServerNoResponseException {
+        try {
+            APICaller.checkConnectNetWork();
+        } catch (NetworkException e) {
+
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Network connect error!");
+            alert.setHeaderText(null);
+            alert.setContentText("Please check your connect and retry!");
+            alert.showAndWait();
+        }
+        try {
+            APICaller.checkServerResponse();
+        } catch (ServerNoResponseException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Server no response!");
+            alert.setHeaderText(null);
+            alert.setContentText("Plese check server and retry!");
+            alert.showAndWait();
+        }
         HashMap<String, Vector<String>> result = new HashMap<>();
         StringBuffer content = connectAndGetRawData("POST", "http://localhost:8000/detect", input);
         String s = content.toString();
@@ -118,48 +138,56 @@ public class APICaller {
     }
 
     // Get statistic
-    public static HashMap<String, Vector<String>> getStats()
-            throws IOException, URISyntaxException, ParseException, ServerNoResponseException {
-        HashMap<String, Vector<String>> result = new HashMap<>();
-        String content = connectAndGetRawData("GET", "http://localhost:8000/stats", "").toString();
-        JSONObject jo = (JSONObject) new JSONParser().parse(content);
-        String articleCount, s;
-        int count;
-        Vector<String> vct = new Vector<>();
-        JSONObject t;
-        String keys[] = { "articleCount", "website_source", "authors", "category", "tags" };
-
-        articleCount = jo.get("articleCount").toString();
-        vct.add(articleCount);
-        result.put("Article count", vct);
-
-        for (String key : keys) {
-            vct = new Vector<>();
-            t = (JSONObject) jo.get(key);
-            for (Object o : t.keySet()) {
-                s = o.toString();
-                count = (int) t.get(s);
-                vct.add(s + ": " + String.valueOf(count));
-            }
-            result.put(key, vct);
-        }
-
-        return result;
-    }
+//    public static HashMap<String, Vector<String>> getStats()
+//            throws IOException, URISyntaxException, ParseException, ServerNoResponseException {
+//        HashMap<String, Vector<String>> result = new HashMap<>();
+//        String content = connectAndGetRawData("GET", "http://localhost:8000/stats", "").toString();
+//        JSONObject jo = (JSONObject) new JSONParser().parse(content);
+//        String articleCount, s;
+//        int count;
+//        Vector<String> vct = new Vector<>();
+//        JSONObject t;
+//        String keys[] = { "articleCount", "website_source", "authors", "category", "tags" };
+//
+//        articleCount = jo.get("articleCount").toString();
+//        vct.add(articleCount);
+//        result.put("Article count", vct);
+//
+//        for (String key : keys) {
+//            vct = new Vector<>();
+//            t = (JSONObject) jo.get(key);
+//            for (Object o : t.keySet()) {
+//                s = o.toString();
+//                count = (int) t.get(s);
+//                vct.add(s + ": " + String.valueOf(count));
+//            }
+//            result.put(key, vct);
+//        }
+//
+//        return result;
+//    }
 
     // Goi api va lay ket qua vao buffer
     public static StringBuffer connectAndGetRawData(String methodType, String urlString, String input)
             throws IOException, URISyntaxException {
         try {
-            checkConnectNetWork();
-            checkServerResponse();
-        } catch (NetworkException | ServerNoResponseException e) {
+            APICaller.checkConnectNetWork();
+        } catch (NetworkException e) {
+
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warning");
+            alert.setTitle("Network connect error!");
             alert.setHeaderText(null);
-            alert.setContentText("Please check your connection and try again!");
+            alert.setContentText("Please check your connect and retry!");
             alert.showAndWait();
-            throw new RuntimeException(e);
+        }
+        try {
+            APICaller.checkServerResponse();
+        } catch (ServerNoResponseException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Server no response!");
+            alert.setHeaderText(null);
+            alert.setContentText("Plese check server and retry!");
+            alert.showAndWait();
         }
         StringBuffer content = new StringBuffer();
         String parsedInput = "";
@@ -205,7 +233,7 @@ public class APICaller {
         String host = "google.com";
         try {
             InetAddress inetAddress = InetAddress.getByName(host);
-            if (!inetAddress.isReachable(5000)) {
+            if (!inetAddress.isReachable(20000)) {
                 throw new NetworkException("Không thể kết nối tới mạng");
             }
         } catch (UnknownHostException e) {
@@ -219,13 +247,13 @@ public class APICaller {
 
     // Kiểm tra server có phản hồi không
     public static void checkServerResponse() throws ServerNoResponseException {
-        String serverUrl = "http://localhost:8000";
+        String serverUrl = "http://localhost:8000/search?byTitle=1&semanticSearch=0&q=";
         try {
             URL url = new URL(serverUrl);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
-            con.setConnectTimeout(5000); // 5 seconds
-            con.setReadTimeout(5000);    // 5 seconds
+            con.setConnectTimeout(10000); // 5 seconds
+            con.setReadTimeout(10000);    // 5 seconds
 
             int status = con.getResponseCode();
             if (status != 200) {

@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.oop.exception.InvalidSearchQueryException;
 import com.oop.exception.ServerNoResponseException;
+import com.oop.manager.SwitchManager;
 import com.oop.service.APICaller;
 import com.oop.exception.NetworkException;
 
@@ -55,13 +56,16 @@ public class MainController extends BaseController {
                     APICaller.checkConnectNetWork();
                 } catch (NetworkException e) {
 
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Network connect error!");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please check your connect and retry!");
+                    alert.showAndWait();
                 }
                 try{
                     SwitchManager.goSearchPage(this, event);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
-                } catch (InvalidSearchQueryException e) {
-
                 }
             });
             suggestionField.setOnMouseEntered((EventHandler<Event>) event -> suggestionField.setStyle(
@@ -111,8 +115,6 @@ public class MainController extends BaseController {
                 SwitchManager.goSearchPage(this, event);
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (InvalidSearchQueryException e) {
-                throw new RuntimeException(e);
             }
         } else {
             if (idleTimeline == null) {
