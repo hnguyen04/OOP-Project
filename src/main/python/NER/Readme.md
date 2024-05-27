@@ -11,7 +11,7 @@ This model use Spacy to recognize entities in document. The entities will be cla
 6 documents are collected randomly from "src\main\resources\data\all_data.csv" and then labeled by team members
 
 ## Models: 
-The spacy model is created and trained in the .ipynb files. Then, it was saved in two folder "model-best" and "model-last". 
+The spacy model is created and trained in the .ipynb files. Then, it was saved in folder "model-best". 
 
 ## API: 
 API is created in API.py
