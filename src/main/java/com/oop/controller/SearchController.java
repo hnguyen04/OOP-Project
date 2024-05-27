@@ -2,12 +2,9 @@ package com.oop.controller;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.oop.exception.InvalidSearchQueryException;
 import com.oop.exception.ServerNoResponseException;
 import com.oop.service.APICaller;
 import com.oop.exception.NetworkException;
@@ -26,7 +23,7 @@ import javafx.geometry.Insets;
 
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-
+import com.oop.manager.SwitchManager;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -105,7 +102,7 @@ public class SearchController extends BaseController{
         for (String suggestion : suggestionsResult) {
             VBox suggestionField = new VBox();
             Label suggestionLabel = new Label(suggestion);
-            suggestionField.setStyle("-fx-background-color: rgb(15, 76, 117);-fx-text-fill: rgb(255, 255, 255);");
+            suggestionField.setStyle("-fx-background-color:rgb(187, 225, 250);-fx-text-fill: rgb(255, 255, 255);");
             suggestionField.getChildren().add(suggestionLabel);
             suggestionField.setOnMouseClicked(event -> {
                 searchField.setText(suggestionLabel.getText());
@@ -113,18 +110,12 @@ public class SearchController extends BaseController{
                     SwitchManager.goSearchPage(this, event);
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (InvalidSearchQueryException e) {
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Invalid query");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Please re-enter, type some word!");
-                    alert.showAndWait();
                 }
             });
             suggestionField.setOnMouseEntered(
                     event -> suggestionField.setStyle("-fx-border-color: #808080;-fx-background-color: #F0F8FF;"));
             suggestionField.setOnMouseExited(event -> suggestionField
-                    .setStyle("-fx-background-color: rgb(15, 76, 117);-fx-text-fill: rgb(255, 255, 255);"));
+                    .setStyle("-fx-background-color:rgb(187, 225, 250);-fx-text-fill: rgb(255, 255, 255);"));
             suggestions.getChildren().add(suggestionField);
         }
         suggestions.setCursor(Cursor.HAND);
@@ -153,20 +144,7 @@ public class SearchController extends BaseController{
         //
         Text title = new Text(item.getArticleTitle());
         title.getStyleClass().add("title");
-        //
-        String dateTimeString = item.getCreationDate();
-        String formattedDate;
-        if (!dateTimeString.equals("None")) {
-            DateTimeFormatter originalFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, originalFormatter);
-            DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            formattedDate = dateTime.format(newFormatter);
-        } else {
-            formattedDate = "None";
-        }
-        Text date = new Text(formattedDate);
-        date.getStyleClass().add("date");
-        //
+    Text date = new Text(item.getCreationDate());
         String contentString = item.getContent().substring(0, Math.min(item.getContent().length(), 250)) + " ...";
         Text contentText = new Text(contentString);
         TextFlow content = new TextFlow(contentText);
@@ -182,12 +160,6 @@ public class SearchController extends BaseController{
             } catch (IOException | CsvValidationException | java.text.ParseException | URISyntaxException
                      | ParseException e) {
                 e.printStackTrace();
-            } catch (ServerNoResponseException e) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Server is not responding");
-                alert.setHeaderText(null);
-                alert.setContentText("Please try connect to server!");
-                alert.showAndWait();
             }
         });
         Button trendButton = new Button("Trend");
@@ -246,7 +218,7 @@ public class SearchController extends BaseController{
         if (event.getCode().equals(KeyCode.ENTER)) {
             try {
                 SwitchManager.goSearchPage(this, event);
-            } catch (IOException | InvalidSearchQueryException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
@@ -306,8 +278,6 @@ public class SearchController extends BaseController{
                 SwitchManager.goSearchPage(this, event);
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (InvalidSearchQueryException e) {
-                throw new RuntimeException(e);
             }
         });
         nextPageButton.setOnAction(event -> {

@@ -2,6 +2,7 @@ package com.oop.controller;
 
 import com.oop.exception.NetworkException;
 import com.oop.exception.ServerNoResponseException;
+import com.oop.manager.SwitchManager;
 import com.oop.service.APICaller;
 import com.oop.model.Item;
 import com.opencsv.exceptions.CsvValidationException;
@@ -119,8 +120,6 @@ public class TrendController extends BaseController {
             try {
                 SwitchManager.returnSearchPage(this, event, this.pageBefore, this.searchText);
             } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (NetworkException e) {
                 throw new RuntimeException(e);
             }
         });
