@@ -42,7 +42,7 @@ def suggestion():
     return jsonify({'result':ket_qua_tim_kiem} )
 
 #NER
-nlp_ner = spacy.load("./src/main/python/ner/model-best")
+nlp_ner = spacy.load("./src/main/python/NER/model-best")
 @app.route('/predict', methods=['POST'])
 def predict():
     # Nhận dữ liệu đầu vào từ yêu cầu
